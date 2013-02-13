@@ -247,7 +247,7 @@ prf_title_="`w |grep ${prf_tty}`"
 #print -Pn "\e]0;%n@%m\ :\ %~\ \($0\)\a"
 # Decide if we need to set titlebar text.
 #PR_TITLEBAR="${prf_title_}"
-RPS1="$prf_title_"
+RPS1=""
 }
 
 bindkey -e
