@@ -1,0 +1,13 @@
+function zsh-reload() {
+    if [[ "$#*" -eq 0 ]]; then
+        test -r ~/.zshrc && . ~/.zshrc
+    else
+        local fn
+        for fn in $*
+            do unfunction $fn 
+            autoload -U $fn 
+        done
+    fi  
+}
+compdef _functions zsh-reload
+
