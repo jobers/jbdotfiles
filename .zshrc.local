@@ -228,7 +228,7 @@ prf_preposition="on"
 [[ "x${REMOTEHOST}" != "x" ]] && prf_remote=$REMOTEHOST && prf_preposition="from" 
 [[ $prf_domain == "." ]] && prf_domain=""
 #prf_load=${(j:, :)${=$(head -1 /proc/loadavg)}[1,3]}
-prf_load="${$(uptime)[-3,-1]}"
+#prf_load="${$(uptime)[-3,-1]}"
 #load
 PERIOD=1
 
@@ -236,12 +236,12 @@ print -Pn "\e]0;%n@%m\ :\ %~\ \($0\)\a"
 
 chpwd (){
     print -Pn "\e]0;%n@%m\ :\ %~\ \($0\)\a"
-    prf_load="${$(uptime)[-3,-1]}"
+#    prf_load="${$(uptime)[-3,-1]}"
 }
 
 periodic () {
 PS1=$(print "\n$PR_CYAN%n$PR_LIGHT_WHITE %bon$PR_MAGENTA ${prf_host}${prf_domain}$PR_LIGHT_WHITE %b$prf_preposition $PR_RED${prf_remote} $PR_WHITE%b[ ${prf_load} ] [ $? ]\n$PR_WHITE%b(%*) %! $PR_BLUE%d$PR_WHITE %# >$PR_LIGHT_WHITE%b ")
-prf_load="${$(uptime)[-3,-1]}"
+prf_load="${=$(uptime)[-3,-1]}"
 prf_tty=`echo $TTY|sed -e 's|\/dev\/||'`
 prf_title_="`w |grep ${prf_tty}`"
 #print -Pn "\e]0;%n@%m\ :\ %~\ \($0\)\a"
