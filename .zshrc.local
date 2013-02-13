@@ -15,26 +15,9 @@
 # Adjustments would still go to the .zshrc.local file.
 ################################################################################
 
-## Inform users about upgrade path for grml's old zshrc layout, assuming that:
-## /etc/skel/.zshrc was installed as ~/.zshrc,
-## /etc/zsh/zshrc was installed as ~/.zshrc.global and
-## ~/.zshrc.local does not exist yet.
-if [ -r ~/.zshrc -a -r ~/.zshrc.global -a ! -r ~/.zshrc.local ] ; then
-    printf '-!-\n'
-    printf '-!- Looks like you are using the old zshrc layout of grml.\n'
-    printf '-!- Please read the notes in the grml-zsh-refcard, being'
-    printf '-!- available at: http://grml.org/zsh/\n'
-    printf '-!-\n'
-    printf '-!- If you just want to get rid of this warning message execute:\n'
-    printf '-!-        touch ~/.zshrc.local\n'
-    printf '-!-\n'
-fi
-
 ## Now, we'll give a few examples of what you might want to use in your
 ## .zshrc.local file (just copy'n'paste and uncomment it there):
-
 ## ZLE tweaks ##
-
 ## use the vi navigation keys (hjkl) besides cursor keys in menu completion
 #bindkey -M menuselect 'h' vi-backward-char        # left
 #bindkey -M menuselect 'k' vi-up-line-or-history   # up
@@ -49,14 +32,14 @@ fi
 #bindkey "^Z" predict-off
 
 ## press ctrl-q to quote line:
-#mquote () {
-#      zle beginning-of-line
-#      zle forward-word
-#      # RBUFFER="'$RBUFFER'"
-#      RBUFFER=${(q)RBUFFER}
-#      zle end-of-line
-#}
-#zle -N mquote && bindkey '^q' mquote
+mquote () {
+      zle beginning-of-line
+      zle forward-word
+      # RBUFFER="'$RBUFFER'"
+      RBUFFER=${(q)RBUFFER}
+      zle end-of-line
+}
+zle -N mquote && bindkey '^q' mquote
 
 ## define word separators (for stuff like backward-word, forward-word, backward-kill-word,..)
 #WORDCHARS='*?_-.[]~=/&;!#$%^(){}<>' # the default
@@ -135,9 +118,10 @@ zstyle ':completion:*:*:kill:*:processes' list-colors "=(#b) #([0-9]#)*=36=31"
 #zstyle ':completion:*' special-dirs true
 
 ## aliases ##
-alias 'visystem-model'='sudo ${EDITOR} /etc/conary/system-model '
-alias 'nrsync'='rsync -avhP --inplace   '
+[[ -x $(whence python) ]] && alias 'epdb'='/bin/echo -e "import epdb\nepdb.st()\n" | /usr/bin/python '
+alias 'nrsync'='rsync -ahP --inplace  '
 alias 'qmplayer'='mplayer -osdlevel 3 -nosound -speed 3.1 '
+alias 'visystem-model'='sudo ${EDITOR} /etc/conary/system-model '
 
 ## translate
 #alias u='translate -i'
@@ -221,18 +205,6 @@ export MANWIDTH=${MANWIDTH:-80}
 
 #Prompt foo
 # See if we can use colors.
-function zsh-reload() {
-    if [[ "$#*" -eq 0 ]]; then
-        test -r ~/.zshrc && . ~/.zshrc
-    else
-        local fn
-        for fn in $*
-            do unfunction $fn
-            autoload -U $fn
-        done
-    fi
-}
-compdef _functions zsh-reload
 
 autoload colors zsh/terminfo
 if [[ "$terminfo[colors]" -ge 8 ]]; then
@@ -255,35 +227,29 @@ prf_preposition="on"
 #prf_title_="print -Pn "\e]0;%n@%m\ :\ %~\ \($0\)\a""
 [[ "x${REMOTEHOST}" != "x" ]] && prf_remote=$REMOTEHOST && prf_preposition="from" 
 [[ $prf_domain == "." ]] && prf_domain=""
-#prf_load=""
 #prf_load=${(j:, :)${=$(head -1 /proc/loadavg)}[1,3]}
-prf_load="$(uptime | grep -o -P '\d+\.\d+,?\ \d+\.\d+,?\ \d+\.\d+')"
+prf_load="${$(uptime)[-3,-1]}"
 #load
 PERIOD=1
 
 print -Pn "\e]0;%n@%m\ :\ %~\ \($0\)\a"
 
-chpwd ()
-{
+chpwd (){
     print -Pn "\e]0;%n@%m\ :\ %~\ \($0\)\a"
-    prf_load=""
-#    prf_load=${(j:, :)${=$(head -1 /proc/loadavg)}[1,3]}
+    prf_load="${$(uptime)[-3,-1]}"
 }
 
 periodic () {
 PS1=$(print "\n$PR_CYAN%n$PR_LIGHT_WHITE %bon$PR_MAGENTA ${prf_host}${prf_domain}$PR_LIGHT_WHITE %b$prf_preposition $PR_RED${prf_remote} $PR_WHITE%b[ ${prf_load} ] [ $? ]\n$PR_WHITE%b(%*) %! $PR_BLUE%d$PR_WHITE %# >$PR_LIGHT_WHITE%b ")
-prf_load="$(uptime | grep -o -P '\d+\.\d+,?\ \d+\.\d+,?\ \d+\.\d+')"
-#prf_load=${(j:, :)${=$(head -1 /proc/loadavg)}[1,3]}
-#prf_tty=`echo $TTY|sed -e 's|\/dev\/||'`
-#prf_title_="`w |grep ${prf_tty}`"
+prf_load="${$(uptime)[-3,-1]}"
+prf_tty=`echo $TTY|sed -e 's|\/dev\/||'`
+prf_title_="`w |grep ${prf_tty}`"
 #print -Pn "\e]0;%n@%m\ :\ %~\ \($0\)\a"
 # Decide if we need to set titlebar text.
 #PR_TITLEBAR="${prf_title_}"
-RPS1=""
+RPS1="$prf_title_"
 }
 
 bindkey -e
-
-
 
 ## END OF FILE #################################################################
