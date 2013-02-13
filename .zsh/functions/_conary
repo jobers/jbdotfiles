@@ -1,0 +1,21 @@
+#compdef conary
+
+local curcontext="$curcontext" state line cmds ret=1
+
+_arguments -C \
+    '1: :->cmds'\
+    '2:: ::->topic'\
+    '*: :->args' && ret=0
+     
+case $state in
+    cmds)
+        _arguments '1:Command:(changeset commit config emerge erase help install localcommit localcs migrate patch pin query rblist rdiff remove repair repquery restore revert rmrollback rollback search showcs syncchildren unpin update updateall verify)'
+    ;;
+    topic)
+        if [[ $words[2] == "help" ]]; then
+            compadd "$@" changeset commit config emerge erase help install localcommit localcs migrate patch pin query rblist rdiff remove repair repquery restore revert rmrollback rollback search showcs syncchildren unpin update updateall verify
+        fi
+    ;;
+    esac
+
+return ret

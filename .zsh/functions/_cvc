@@ -1,0 +1,144 @@
+#compdef cvc
+
+#(( $+functions[_cvc-add] )) ||
+_cvc-add () {
+    local curcontext=$curcontext state line ret=1
+    typeset -A opt_args
+    local _uncontrolled
+    if [[ -f "CONARY" ]]; then
+        _uncontrolled=( ${(q)${(M)${(f)"$(cvc status)"}:#\?  *}##\?  } )
+    fi
+            
+    _arguments -S \
+          '(--binary --text)'{--binary,--text}'[specify filetype]' \
+          '*:Files not under CVC Control:->file' && return
+
+    case $state in
+        (file)
+        if [[ -f "CONARY" ]]; then
+            _describe -t files 'Files not under control' _uncontrolled && ret=0 
+        else
+            _files
+        fi
+        ;;
+    esac
+
+    return ret
+}
+
+#(( $+functions[_cvc_commands] )) ||
+_cvc_commands () {
+    local ret=1
+    local -a file_operations 
+    file_operations=(
+        add:'Add a file to be controlled by Conary'
+        merge:'Merge changes made in a parent branch into the current directory'
+        refresh:'Refresh files that are automatically downloaded'
+        remove:'Remove a file from Conary control'
+        rename:'Rename a file that is under Conary control'
+        revert:'Revert local changes to one or more files'
+        set:'Set the properties of a file under Conary control'
+        update:'Update files in one or more directories to a different version')
+    
+    local -a information_display
+    information_display=(
+        annotate:'Show version information for each line in a file'
+        config:'Display the current configuration'
+        diff:'Show uncommitted changes'
+        explain:'Display Conary recipe documentation'
+        factory:'Show or change the factory for the working directory'
+        help:'Display help information'
+        log:'Show changelog entries for this source component'
+        rdiff:'Show changes between two versions of a trove in a repository'
+        status:'Show changed files in the working directory')
+    
+    local -a key_management
+    key_management=(
+        addkey:'Adds a public key from stdin to a repository'
+        getkey:'Retrieves a specified public key from a repository'
+        listkeys:'Lists the public key fingerprints for a specified user')
+    
+    local -a recipe_building
+    recipe_building=(
+        cook:'Build binary package and groups from a recipe')
+    
+    local -a repository_access
+    repository_access=(
+        checkout:'Check out a source component'
+        clone:'Copy troves from one branch to another in a repository'
+        commit:'Commit changes to a source component'
+        derive:'Create a derived package'
+        promote:'Copy troves from one label to another in a repository'
+        shadow:'Create a shadow in a repository'
+        sign:'Add a digital signature to troves in a repository')
+
+    local -a setup_commands
+    setup_commands=(
+        context:'Set up a context in the current directory'
+        newpkg:'Set a directory for creating a new package')
+    
+    _describe -t file-operations 'used to manage files in the source directory' file_operations
+    _describe -t info-display 'display cvc configuration and configuration files' information_display 
+    _describe -t key-management 'used for client-server public key interaction' key_management 
+    _describe -t recipe-building 'build recipes' recipe_building 
+    _describe -t repo-access 'interact with the conary repository' repository_access 
+    _describe -t setup-commands 'used in the creation of new contexts and packages' setup_commands && ret=0
+
+    return ret
+}
+
+#(( $+functions[_cvc_common_options] )) ||
+_cvc_common_options () {
+    local curcontext="$curcontext" state line ret=1
+    typeset -A opt_args
+    ret=0 
+    return ret       
+}
+
+#(( $+functions[_cvc-help] )) ||
+_cvc-help () {
+    local curcontext=$curcontext state line ret=1
+    typeset -A opt_args
+
+    _arguments \
+        '--verbose[show verbose help]' \
+        ': :->commands' && return
+    
+    case $state in
+        (commands)
+            _cvc_commands && ret=0    
+        ;;
+    esac
+
+    return ret
+}
+    
+_cvc() {
+    local curcontext=$curcontext state line ret=1
+    typeset -A opt_args
+    _arguments -C \
+        '(- :)--version[display version information]' \
+        '(- :)--help[display help message]' \
+        '(-c --config)'{-c,--config}'[pass configuration parameter to command]: :->_conary_config' \
+        '(-): :->command' \
+        '*:: :->option-or-argument' && return
+
+    case $state in
+        (command)
+            _cvc_commands && ret=0
+        ;;
+        (option-or-argument)
+            curcontext=${curcontext%:*:*}:cvc-$words[1]:
+            if (( $+functions[_cvc-$words[1]] )) ; then
+                _call_function ret _cvc-$words[1]
+            elif zstyle -T :completion:$curcontext: use-fallback; then
+                _files && ret=0
+            else
+                _message 'unknown sub-command'
+            fi
+        ;;
+    esac
+  return ret
+}
+
+_cvc "$@"

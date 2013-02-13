@@ -1,0 +1,2 @@
+fpath=(~/.zsh/functions $fpath)
+PATH=${PATH}:/usr/local/sbin:/usr/sbin:/sbin:~/bin

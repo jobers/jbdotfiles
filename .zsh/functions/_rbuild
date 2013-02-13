@@ -1,0 +1,42 @@
+#compdef rbuild
+
+_rbuild() {
+    local curcontext="$curcontext" state line
+    typeset -A opt_args
+
+    _arguments \
+        '1: :->command'\
+        '2: :->subcommand'\
+        '*: :->options'
+     
+    case $state in
+    command)
+        _arguments '1:Command:(build checkout config init promote publish rebase show status update watch help)'
+    ;;
+    subcommand)
+        case $words[2] in
+        build)          
+            compadd "$@" groups images packages platform release
+        ;;
+        show)
+            compadd "$@" groups images packages
+        ;;
+        update)
+            compadd "$@" all packages product stage
+        ;;
+        watch)
+            compadd "$@" groups images job packages
+        ;;
+        help)
+            compadd "$@" build checkout config init promote publish rebase show status update watch help
+        ;;
+        *)
+            _files
+        esac
+    ;;
+    *)
+        _files
+    esac
+}
+
+_rbuild "$@" 

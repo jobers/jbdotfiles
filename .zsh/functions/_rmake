@@ -1,0 +1,33 @@
+#compdef rmake
+
+_rmake() {
+    local curcontext="$curcontext" state line
+    typeset -A opt_args
+
+    _arguments \
+        '1: :->command'\
+        '2: :->subcommand'\
+        '*: :->options'
+     
+    case $state in
+    command)
+        _arguments '1:Command:(config help list poll watch query q build buildimage commit ci delete load rebuild restart stop archive changeset chroot clean checkout co context newpkg)'
+    ;;
+    subcommand)
+        case $words[2] in
+        list)          
+            compadd "$@" roots nodes
+        ;;
+        help)
+            compadd "$@" config help list poll watch query q build buildimage commit ci delete load rebuild restart stop archive changeset chroot clean checkout co context newpkg
+        ;;
+        *)
+            _files
+        esac
+    ;;
+    *)
+        _files
+    esac
+}
+
+_rmake "$@" 
