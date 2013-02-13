@@ -66,7 +66,7 @@ zle -N mquote && bindkey '^q' mquote
 #setopt histallowclobber
 
 ## warning if file exists ('cat /dev/null > ~/.zshrc')
-setopt NO_clobber
+setopt NO_CLOBBER
 
 ## don't warn me about bg processes when exiting
 #setopt nocheckjobs
@@ -79,7 +79,8 @@ setopt printexitvalue
 
 ## Allow comments even in interactive shells
 #setopt interactivecomments
-
+setopt INC_APPEND_HISTORY
+setopt SHARE_HISTORY
 
 ## compsys related snippets ##
 
