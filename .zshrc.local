@@ -14,7 +14,6 @@
 # setup, too, just by copying our global zshrc to their ${HOME}/.zshrc.
 # Adjustments would still go to the .zshrc.local file.
 ################################################################################
-
 ## Now, we'll give a few examples of what you might want to use in your
 ## .zshrc.local file (just copy'n'paste and uncomment it there):
 ## ZLE tweaks ##
@@ -23,14 +22,6 @@
 #bindkey -M menuselect 'k' vi-up-line-or-history   # up
 #bindkey -M menuselect 'l' vi-forward-char         # right
 #bindkey -M menuselect 'j' vi-down-line-or-history # bottom
-
-## set command prediction from history, see 'man 1 zshcontrib'
-#is4 && zrcautoload predict-on && \
-#zle -N predict-on         && \
-#zle -N predict-off        && \
-#bindkey "^X^Z" predict-on && \
-#bindkey "^Z" predict-off
-
 ## press ctrl-q to quote line:
 mquote () {
       zle beginning-of-line
@@ -43,150 +34,33 @@ zle -N mquote && bindkey '^q' mquote
 
 ## define word separators (for stuff like backward-word, forward-word, backward-kill-word,..)
 #WORDCHARS='*?_-.[]~=/&;!#$%^(){}<>' # the default
-#WORDCHARS=.
-#WORDCHARS='*?_[]~=&;!#$%^(){}'
-#WORDCHARS='${WORDCHARS:s@/@}'
 
-# just type 'cd ...' to get 'cd ../..'
-#rationalise-dot() {
-#  if [[ $LBUFFER == *.. ]] ; then
-#    LBUFFER+=/..
-#  else
-#    LBUFFER+=.
-#  fi
-#}
-#zle -N rationalise-dot
-#bindkey . rationalise-dot
-
-#bindkey '\eq' push-line-or-edit
-
-## some popular options ##
-
-## add `|' to output redirections in the history
-#setopt histallowclobber
-
+bindkey '\eq' push-line-or-edit
 ## warning if file exists ('cat /dev/null > ~/.zshrc')
 setopt NO_CLOBBER
-
-## don't warn me about bg processes when exiting
-#setopt nocheckjobs
-
-## alert me if something failed
 setopt printexitvalue
-
-## with spelling correction, assume dvorak kb
-#setopt dvorak
-
-## Allow comments even in interactive shells
-#setopt interactivecomments
 setopt INC_APPEND_HISTORY
 setopt SHARE_HISTORY
 
-## compsys related snippets ##
-
-## changed completer settings
-#zstyle ':completion:*' completer _complete _correct _approximate
-#zstyle ':completion:*' expand prefix suffix
-
-## another different completer setting: expand shell aliases
 zstyle ':completion:*' completer _expand_alias _complete _approximate
+zstyle ':completion:*' expand prefix suffix
 zstyle ':completion:*:*:kill:*:processes' list-colors "=(#b) #([0-9]#)*=36=31"
-## to have more convenient account completion, specify your logins:
-#my_accounts=(
-# {grml,grml1}@foo.invalid
-# grml-devel@bar.invalid
-#)
-#other_accounts=(
-# {fred,root}@foo.invalid
-# vera@bar.invalid
-#)
-#zstyle ':completion:*:my-accounts' users-hosts $my_accounts
-#zstyle ':completion:*:other-accounts' users-hosts $other_accounts
-
-## telnet on non-default ports? ...well:
-## specify specific port/service settings:
-#telnet_users_hosts_ports=(
-#  user1@host1:
-#  user2@host2:
-#  @mail-server:{smtp,pop3}
-#  @news-server:nntp
-#  @proxy-server:8000
-#)
-#zstyle ':completion:*:*:telnet:*' users-hosts-ports $telnet_users_hosts_ports
-
-## the default grml setup provides '..' as a completion. it does not provide
-## '.' though. If you want that too, use the following line:
-#zstyle ':completion:*' special-dirs true
 
 ## aliases ##
 [[ -x $(whence python) ]] && alias 'epdb'='/bin/echo -e "import epdb\nepdb.st()\n" | /usr/bin/python '
 alias 'nrsync'='rsync -ahP --inplace  '
 alias 'qmplayer'='mplayer -osdlevel 3 -nosound -speed 3.1 '
-alias 'visystem-model'='sudo ${EDITOR} /etc/conary/system-model '
-
-## translate
-#alias u='translate -i'
-
-## ignore ~/.ssh/known_hosts entries
-#alias insecssh='ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null" -o "PreferredAuthentications=keyboard-interactive"'
+[[ -f "/etc/conary/system-model" ]] && alias 'visystem-model'='sudo ${EDITOR} /etc/conary/system-model '
 
 ## global aliases (for those who like them) ##
-
-#alias -g '...'='../..'
-#alias -g '....'='../../..'
-#alias -g BG='& exit'
-#alias -g C='|wc -l'
 alias -g GG='|grep'
-#alias -g H='|head'
-#alias -g Hl=' --help |& less -r'
-#alias -g K='|keep'
-#alias -g L='|less'
+alias -g Hl=' --help |& less -r'
 alias -g LL='|& less -r'
-#alias -g M='|most'
-#alias -g N='&>/dev/null'
-#alias -g R='| tr A-z N-za-m'
 alias -g SL='| sort | less'
-#alias -g S='| sort'
-#alias -g T='|tail'
-#alias -g V='| vim -'
-## miscellaneous code ##
+alias -g V='| vim -'
+
 export EDITOR=vim
-## Use a default width of 80 for manpages for more convenient reading
 export MANWIDTH=${MANWIDTH:-80}
-## Set a search path for the cd builtin
-#cdpath=(.. ~)
-
-## variation of our manzsh() function; pick you poison:
-#manzsh()  { /usr/bin/man zshall |  most +/"$1" ; }
-
-## Switching shell safely and efficiently? http://www.zsh.org/mla/workers/2001/msg02410.html
-#bash() {
-#    NO_SWITCH="yes" command bash "$@"
-#}
-#restart () {
-#    exec $SHELL $SHELL_ARGS "$@"
-#}
-
-## log out? set timeout in seconds...
-## ...and do not log out in some specific terminals:
-#if [[ "${TERM}" == ([Exa]term*|rxvt|dtterm|screen*) ]] ; then
-#    unset TMOUT
-#else
-#    TMOUT=1800
-#fi
-
-## associate types and extensions (be aware with perl scripts and anwanted behaviour!)
-#check_com zsh-mime-setup || { autoload zsh-mime-setup && zsh-mime-setup }
-#alias -s pl='perl -S'
-
-## ctrl-s will no longer freeze the terminal.
-#stty erase "^?"
-
-## you want to automatically use a bigger font on big terminals?
-#if [[ "$TERM" == "xterm" ]] && [[ "$LINES" -ge 50 ]] && [[ "$COLUMNS" -ge 100 ]] && [[ -z "$SSH_CONNECTION" ]] ; then
-#    large
-#fi
-
 ## Some quick Perl-hacks aka /useful/ oneliner
 #bew() { perl -le 'print unpack "B*","'$1'"' }
 #web() { perl -le 'print pack "B*","'$1'"' }
@@ -203,10 +77,8 @@ export MANWIDTH=${MANWIDTH:-80}
 #vimpm ()      { vim `perldoc -l $1 | sed -e 's/pod$/pm/'` }
 #vimhelp ()    { vim -c "help $1" -c on -c "au! VimEnter *" }
 
-
 #Prompt foo
 # See if we can use colors.
-
 autoload colors zsh/terminfo
 if [[ "$terminfo[colors]" -ge 8 ]]; then
     colors
@@ -218,39 +90,34 @@ for color in RED GREEN YELLOW BLUE MAGENTA CYAN WHITE; do
     (( count = $count + 1 ))
 done
 fi
-PR_NO_COLOUR="%{$terminfo[sgr0]%}"
+PR_NO_COLOUR="%{$terminfo[sgr0]%}o"
 
-#location stuff
-prf_domain=".`dnsdomainname`"
-prf_host=`hostname`
-prf_remote="local"
-prf_preposition="on"
-#prf_title_="print -Pn "\e]0;%n@%m\ :\ %~\ \($0\)\a""
-[[ "x${REMOTEHOST}" != "x" ]] && prf_remote=$REMOTEHOST && prf_preposition="from" 
-[[ $prf_domain == "." ]] && prf_domain=""
-#prf_load=${(j:, :)${=$(head -1 /proc/loadavg)}[1,3]}
-#prf_load="${$(uptime)[-3,-1]}"
-#load
-PERIOD=1
-
-print -Pn "\e]0;%n@%m\ :\ %~\ \($0\)\a"
-
-chpwd (){
-    print -Pn "\e]0;%n@%m\ :\ %~\ \($0\)\a"
-#    prf_load="${$(uptime)[-3,-1]}"
+_prf_load () {
+    print -- "${${=$(uptime)}[-3,-1]}"
+    return 0
 }
 
+_prf_one () {
+    print -- "\n$PR_MAGENTA%n$PR_WHITE %bon $PR_BLUE%M$PR_WHITE %bon $PR_CYAN%y $PR_WHITE%b[ $prf_load ] ($?)"
+    return 0
+}
+
+_prf_two () {
+    print -- "\n$PR_WHITE%b(%*) %! $PR_BLUE%d$PR_WHITE %# >$PR_WHITE%b "
+    return 0
+}
+
+_prf_one_r () {
+    print -- ""
+    return 0
+}
+
+PERIOD=1
 periodic () {
-PS1=$(print "\n$PR_CYAN%n$PR_LIGHT_WHITE %bon$PR_MAGENTA ${prf_host}${prf_domain}$PR_LIGHT_WHITE %b$prf_preposition $PR_RED${prf_remote} $PR_WHITE%b[ ${prf_load} ] [ $? ]\n$PR_WHITE%b(%*) %! $PR_BLUE%d$PR_WHITE %# >$PR_LIGHT_WHITE%b ")
-prf_load="${=$(uptime)[-3,-1]}"
-prf_tty=`echo $TTY|sed -e 's|\/dev\/||'`
-prf_title_="`w |grep ${prf_tty}`"
-#print -Pn "\e]0;%n@%m\ :\ %~\ \($0\)\a"
-# Decide if we need to set titlebar text.
-#PR_TITLEBAR="${prf_title_}"
+prf_load="$(_prf_load)"
+PS1="$(_prf_one)$(_prf_two)"
 RPS1=""
 }
 
 bindkey -e
-
 ## END OF FILE #################################################################
