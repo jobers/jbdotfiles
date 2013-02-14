@@ -116,7 +116,7 @@ PERIOD=1
 periodic () {
 prf_load="$(_prf_load)"
 PS1="$(_prf_one)$(_prf_two)"
-RPS1=""
+RPS1="${vcs_info_msg_0_}"
 }
 
 bindkey -e
