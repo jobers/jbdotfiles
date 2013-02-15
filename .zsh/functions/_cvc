@@ -2,21 +2,29 @@
 
 #(( $+functions[_cvc-add] )) ||
 _cvc-add () {
-    local curcontext=$curcontext state line ret=1
+    zmodload zsh/pcre
+    local curcontext="$curcontext" state line ret=1 cvc_status filelist
     typeset -A opt_args
-    local _uncontrolled
+    filelist=()
     if [[ -f "CONARY" ]]; then
-        _uncontrolled=( ${(q)${(M)${(f)"$(cvc status)"}:#\?  *}##\?  } )
+        cvc_status="$(cvc status)"
+        pcre_compile -m "\?\ \ (.*)$"
+        pcre_match -b -- "$cvc_status"
+        while [[ $? -eq 0 ]] do
+            b=($=ZPCRE_OP)
+            filelist+="${(q)match}"
+            pcre_match -b -n ${b[2]} -- "${cvc_status}"
+        done
     fi
             
     _arguments -S \
           '(--binary --text)'{--binary,--text}'[specify filetype]' \
-          '*:Files not under CVC Control:->file' && return
+          '*:FYI NO statefile found so listing all files:->file' && return
 
     case $state in
         (file)
-        if [[ -f "CONARY" ]]; then
-            _describe -t files 'Files not under control' _uncontrolled && ret=0 
+        if [[ -f "CONARY"  ]]; then
+            _describe -t files 'Files not under control' filelist && ret=0 
         else
             _files
         fi
@@ -89,7 +97,7 @@ _cvc_commands () {
 
 #(( $+functions[_cvc_common_options] )) ||
 _cvc_common_options () {
-    local curcontext="$curcontext" state line ret=1
+    local curcontext="$curcontexti" state line ret=1
     typeset -A opt_args
     ret=0 
     return ret       
@@ -97,7 +105,7 @@ _cvc_common_options () {
 
 #(( $+functions[_cvc-help] )) ||
 _cvc-help () {
-    local curcontext=$curcontext state line ret=1
+    local curcontext="$curcontext" state line ret=1
     typeset -A opt_args
 
     _arguments \
@@ -113,6 +121,31 @@ _cvc-help () {
     return ret
 }
     
+#(( $+functions[_cvc-remove] )) ||
+_cvc-remove () {
+    local curcontext="$curcontext" state line ret=1
+    typeset -A opt_args
+    local _controlled
+    if [[ -f "CONARY" ]]; then
+        _uncontrolled=( ${(q)${(M)${(f)"$(cvc status)"}:#\?  *}##\?  } )
+    fi
+            
+    _arguments -S \
+          '(--binary --text)'{--binary,--text}'[specify filetype]' \
+          '*:Files not under CVC Control:->file' && return
+
+    case $state in
+        (file)
+        if [[ -f "CONARY" ]]; then
+            _describe -t files 'Files not under control' _uncontrolled && ret=0 
+        else
+            _files
+        fi
+        ;;
+    esac
+
+    return ret
+}
 _cvc() {
     local curcontext=$curcontext state line ret=1
     typeset -A opt_args
