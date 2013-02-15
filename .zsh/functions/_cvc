@@ -1,48 +1,17 @@
 #compdef cvc
 
-#(( $+functions[_cvc-add] )) ||
-_cvc-add () {
-    zmodload zsh/pcre
-    local curcontext="$curcontext" state line ret=1 cvc_status filelist
-    typeset -A opt_args
-    filelist=()
-    if [[ -f "CONARY" ]]; then
-        cvc_status="$(cvc status)"
-        pcre_compile -m "\?\ \ (.*)$"
-        pcre_match -b -- "$cvc_status"
-        while [[ $? -eq 0 ]] do
-            b=($=ZPCRE_OP)
-            filelist+="${(q)match}"
-            pcre_match -b -n ${b[2]} -- "${cvc_status}"
-        done
-    fi
-            
-    _arguments -S \
-          '(--binary --text)'{--binary,--text}'[specify filetype]' \
-          '*:FYI NO statefile found so listing all files:->file' && return
-
-    case $state in
-        (file)
-        if [[ -f "CONARY"  ]]; then
-            _describe -t files 'Files not under control' filelist && ret=0 
-        else
-            _files
-        fi
-        ;;
-    esac
-
-    return ret
-}
+#helper functions
 
 #(( $+functions[_cvc_commands] )) ||
 _cvc_commands () {
     local ret=1
+
     local -a file_operations 
     file_operations=(
         add:'Add a file to be controlled by Conary'
         merge:'Merge changes made in a parent branch into the current directory'
         refresh:'Refresh files that are automatically downloaded'
-        remove:'Remove a file from Conary control'
+        {rm,remove}:'Remove a file from Conary control'
         rename:'Rename a file that is under Conary control'
         revert:'Revert local changes to one or more files'
         set:'Set the properties of a file under Conary control'
@@ -97,10 +66,44 @@ _cvc_commands () {
 
 #(( $+functions[_cvc_common_options] )) ||
 _cvc_common_options () {
-    local curcontext="$curcontexti" state line ret=1
+    local curcontext="$curcontext" state line ret=1
     typeset -A opt_args
     ret=0 
     return ret       
+}
+    
+#(( $+functions[_cvc-add] )) ||
+_cvc-add () {
+    zmodload zsh/pcre
+    local curcontext="$curcontext" state line ret=1 cvc_status filelist
+    typeset -A opt_args
+    filelist=()
+    if [[ -f "CONARY" ]]; then
+        filelist=("$( __pregex "\?\ \ (.*)$" "$(cvc status)")")
+#        cvc_status="$(cvc status)"
+#        pcre_compile -m "\?\ \ (.*)$"
+#        pcre_match -b -- "$cvc_status"
+#        while [[ $? -eq 0 ]] do
+#            b=($=ZPCRE_OP)
+#            filelist+="${(q)match}"
+#            pcre_match -b -n ${b[2]} -- "${cvc_status}"
+#        done
+    fi
+            
+    _arguments -S \
+          '(--binary --text)'{--binary,--text}'[specify filetype]' \
+          '*:FYI NO statefile found so listing all files:->file' && return
+
+    case $state in
+        (file)
+        if [[ -f "CONARY"  ]]; then
+            _describe -t files 'Files not under control' filelist && ret=0 
+        else
+            _files
+        fi
+        ;;
+    esac
+    return ret
 }
 
 #(( $+functions[_cvc-help] )) ||
@@ -120,39 +123,48 @@ _cvc-help () {
 
     return ret
 }
-    
-#(( $+functions[_cvc-remove] )) ||
-_cvc-remove () {
+
+#(( $+functions[_cvc-merge] )) ||
+_cvc-merge () {
     local curcontext="$curcontext" state line ret=1
     typeset -A opt_args
-    local _controlled
+    
+    
+    return ret       
+}
+
+#(( $+functions[_cvc-remove] )) ||
+_cvc-remove () {
+    zmodload zsh/pcre
+    local curcontext="$curcontext" state line ret=1 state_file filelist
+    typeset -A opt_arg
+    filelist=()
     if [[ -f "CONARY" ]]; then
-        _uncontrolled=( ${(q)${(M)${(f)"$(cvc status)"}:#\?  *}##\?  } )
+        filelist=("$( __pregex "^\w+\ (.*)\ "  "$(<CONARY)")")
     fi
             
     _arguments -S \
-          '(--binary --text)'{--binary,--text}'[specify filetype]' \
-          '*:Files not under CVC Control:->file' && return
+          '*:FYI No statefile found so listing all files:->file' && return
 
     case $state in
         (file)
         if [[ -f "CONARY" ]]; then
-            _describe -t files 'Files not under control' _uncontrolled && ret=0 
+            _describe -t files 'Files under CVC control' filelist && ret=0 
         else
             _files
         fi
         ;;
     esac
-
     return ret
 }
+
 _cvc() {
     local curcontext=$curcontext state line ret=1
     typeset -A opt_args
     _arguments -C \
+        {-c,--config=}'[pass configuration parameter to command]:->_conary_config' \
         '(- :)--version[display version information]' \
         '(- :)--help[display help message]' \
-        '(-c --config)'{-c,--config}'[pass configuration parameter to command]: :->_conary_config' \
         '(-): :->command' \
         '*:: :->option-or-argument' && return
 
