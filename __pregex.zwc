@@ -1,0 +1,20 @@
+(( $+functions[__pregex] )) ||
+__pregex () {
+    zmodload zsh/pcre
+    local b pattern result string 
+    if [[ $? -ne  2 ]]; then
+        return 1
+    fi  
+    pattern="${1}"
+    string="${2}"
+    result=()
+    pcre_compile -m "$pattern"
+    pcre_match -b -- "$string"
+        while [[ $? -eq 0 ]] do
+            b=($=ZPCRE_OP)
+            result+="${(q)match}"
+            pcre_match -b -n ${b[2]} -- "${string}"
+        done
+    print -R -- "${result}"
+    return 0
+}
