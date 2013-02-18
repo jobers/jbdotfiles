@@ -11,7 +11,7 @@ _cvc_commands () {
         add:'Add a file to be controlled by Conary'
         merge:'Merge changes made in a parent branch into the current directory'
         refresh:'Refresh files that are automatically downloaded'
-        {rm,remove}:'Remove a file from Conary control'
+        remove:'Remove a file from Conary control'
         rename:'Rename a file that is under Conary control'
         revert:'Revert local changes to one or more files'
         set:'Set the properties of a file under Conary control'
@@ -75,19 +75,18 @@ _cvc_common_options () {
 #(( $+functions[_cvc-add] )) ||
 _cvc-add () {
     zmodload zsh/pcre
-    local curcontext="$curcontext" state line ret=1 cvc_status filelist
+    local curcontext="$curcontext" state line ret=1 filelist cvc_status
     typeset -A opt_args
     filelist=()
     if [[ -f "CONARY" ]]; then
-        filelist=("$( __pregex "\?\ \ (.*)$" "$(cvc status)")")
-#        cvc_status="$(cvc status)"
-#        pcre_compile -m "\?\ \ (.*)$"
-#        pcre_match -b -- "$cvc_status"
-#        while [[ $? -eq 0 ]] do
-#            b=($=ZPCRE_OP)
-#            filelist+="${(q)match}"
-#            pcre_match -b -n ${b[2]} -- "${cvc_status}"
-#        done
+        cvc_status="$(cvc status)"
+        pcre_compile -m "\?\ \ (.*)$"
+        pcre_match -b -- "$cvc_status"
+        while [[ $? -eq 0 ]] do
+            b=($=ZPCRE_OP)
+            filelist+=${(q)match}
+            pcre_match -b -n ${b[2]} -- "${cvc_status}"
+        done
     fi
             
     _arguments -S \
@@ -129,7 +128,6 @@ _cvc-merge () {
     local curcontext="$curcontext" state line ret=1
     typeset -A opt_args
     
-    
     return ret       
 }
 
@@ -140,7 +138,9 @@ _cvc-remove () {
     typeset -A opt_arg
     filelist=()
     if [[ -f "CONARY" ]]; then
-        filelist=("$( __pregex "^\w+\ (.*)\ "  "$(<CONARY)")")
+        filelist=()
+        state_file="$(print ${${${${${${"$(<CONARY)"}#stateversion *$'\n'name *$'\n'version *$'\n'branch *$'\n'}#lastmerged *$'\n'}#factory *$'\n'}#[0-9]*$'\n'}} | perl -pe 's@\w{32}\ (.*)\ \w{40}\ (config|refresh|autosource)\ .*$@$1@' )"
+#        filelist=( "${(q)$(print "$state_file"| perl -pe 's@\w{32}\ (.*)\ \w{40}\ (config|refresh|autosource)\ .*$@$1@' | perl -pe 's@\ @\\ @g' )}" )
     fi
             
     _arguments -S \
