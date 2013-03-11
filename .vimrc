@@ -261,6 +261,7 @@ endif
   set indentkeys=!<Tab>,o,O
   set laststatus=2
   set number
+  nnoremap <F2> :set nonumber!<CR>
   set paste
   set shiftwidth=4
   set smartindent
