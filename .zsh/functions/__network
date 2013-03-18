@@ -1,19 +1,23 @@
-get_network_interface() {
-        if [ -n "$MONITORED_NETWORK" ]; then
-        # Manual override
-                _RET="$MONITORED_NETWORK"
-        elif [ -d /proc ]; then
-        # Linux systems, read route and interface from procfs
-        local Iface Destination Gateway Flags RefCnt Use Metric Mask MTU Window IRTT
-        while read Iface Destination Gateway Flags RefCnt Use Metric Mask MTU Window IRTT; do
-            [ "$Mask" = "00000000" ] && break
-        done < /proc/net/route
-        _RET="$Iface"
-    else
-        # Mac OSX, shell out to the route command
-        _RET=$(/sbin/route get default|grep interface:|awk '{print $2}')
-    fi  
-}
+#!/bin/sh -e
+#
+#    network: calculate the network up/down rates
+#
+#    Copyright (C) 2008 Canonical Ltd.
+#    Copyright (C) 2011 Dustin Kirkland
+#
+#    Authors: Dustin Kirkland <kirkland@ubuntu.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 3 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 __network_detail() {
     get_network_interface; local interface="$_RET"
