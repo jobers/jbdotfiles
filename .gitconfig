@@ -1,7 +1,5 @@
 [user]
 	name = jobers
 	email = jober@foresightlinux.org
-[push]
-	default = upstream
 [credential]
 	helper = cache --timeout=28800
