@@ -909,7 +909,7 @@ bindkey '\ei' menu-complete  # menu completion via esc-i
 # press esc-e for editing command line in $EDITOR or $VISUAL
 if is4 && zrcautoload edit-command-line && zle -N edit-command-line ; then
     #k# Edit the current line in \kbd{\$EDITOR}
-    bindkey '\ee' edit-command-line
+#    bindkey '\ee' edit-command-line
 fi
 
 if is4 && [[ -n ${(k)modules[zsh/complist]} ]] ; then

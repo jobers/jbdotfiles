@@ -1,0 +1,17 @@
+
+function fileswap()
+{
+    local IN_FILE TARGET IN_DIR TMPFILE
+    IN_FILE="${1}"
+    IN_DIR="${IN_FILE%/*}/"
+    TMPFILE="${IN_DIR}/.swapTmpFile-${RANDOM}"
+    if [[ ! -e "${TMPFILE}" ]]; then
+        mv "${1}" "${TMPFILE}"
+        mv "${2}" "${1}"
+        mv "${TMPFILE}" "${2}" 
+    else
+        print "tmp file exists for some reason"
+        return 127
+    fi
+    return 0
+}
