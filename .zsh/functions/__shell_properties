@@ -1,0 +1,18 @@
+
+__shell_properties() {
+    export SHELL_PLATFORM='unknown'
+
+    case "$OSTYPE" in
+        *'linux'*   ) SHELL_PLATFORM='linux'    ;;  
+        *'darwin'*  ) SHELL_PLATFORM='osx'      ;;  
+        *'bsd'*     ) SHELL_PLATFORM='bsd'      ;;  
+    esac
+
+    __shell_is_linux() { [[ $SHELL_PLATFORM == 'linux' || $SHELL_PLATFORM == 'bsd' ]]; }
+    __shell_is_osx()   { [[ $SHELL_PLATFORM == 'osx' ]]; }
+    __shell_is_bsd()   { [[ $SHELL_PLATFORM == 'bsd' || $SHELL_PLATFORM == 'osx' ]]; }
+
+    export -f __shell_is_linux
+    export -f __shell_is_osx
+    export -f __shell_is_bsd
+}
