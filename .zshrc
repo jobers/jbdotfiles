@@ -598,7 +598,7 @@ bindkey '\e[B'  down-line-or-search     # <ESC>-
 bindkey '^xp'   history-beginning-search-backward
 bindkey '^xP'   history-beginning-search-forward
 bindkey -s '^L' "|less\n"             # ctrl-L pipes to less
-bindkey -s '^B' " &\n"                # ctrl-B runs it in the background
+#bindkey -s '^B' " &\n"                # ctrl-B runs it in the background
 # if terminal type is set to 'rxvt':
 bindkey '\e[7~' beginning-of-line       # home
 bindkey '\e[8~' end-of-line             # end
