@@ -94,7 +94,7 @@ done
 fi
 
 # dircolors 
-[[ -f "~/.zsh/dircolors.256light" ]] && eval $(dircolors "~/.zsh/dircolors.256light" )
+[[ -f "~/.zsh/dircolors.256light" ]] && eval $(dircolors -c "~/.zsh/dircolors.256light" )
 
 PR_NO_COLOUR="%{$terminfo[sgr0]%}o"
 
