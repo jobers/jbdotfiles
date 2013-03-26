@@ -92,6 +92,10 @@ for color in RED GREEN YELLOW BLUE MAGENTA CYAN WHITE; do
     (( count = $count + 1 ))
 done
 fi
+
+# dircolors 
+[[ -f "~/.zsh/dircolors.256light" ]] && eval $(dircolors "~/.zsh/dircolors.256light" )
+
 PR_NO_COLOUR="%{$terminfo[sgr0]%}o"
 
 _prf_load () {
