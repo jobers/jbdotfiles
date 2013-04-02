@@ -23,13 +23,18 @@ function _cvc-help() {
     [[ -n ${cvc_describe} ]] && print "Display help information" && return 
     local -a helptopics
     helptopics=( ${_cvc_commands} ${_cvc_aliases} )
-    _arguments '1:[CVC Command]:helptopics'
+    _arguments '1:CVC Command:helptopics'
 }
 
 function __cvc-files-notrack() {
     local -a files
     files=( ${(q)${(f)"$(command cvc status 2>/dev/null |grep '^\?')"}/\?\ \ /} )
-    _describe -t files-notrack 'Files not currently tracked' files "$@"
+    if (( ${#files} == 0 )); then
+        _describe -t files-notrack 'Files not currently tracked' files
+    else
+        _message -e "No CONARY state found. Falling back to files"
+        _files
+    fi    
 }
 
 function _cvc() {
@@ -57,6 +62,7 @@ function _cvc() {
         (option_or_argument)
             if (( ${+commands[cvc]} == 0 )); then 
                 _message 'cvc not found in $path; sub-cmd completions disabled.'
+                _files
                 return 0
             fi
             cvc_command="${words[1]}"
@@ -73,6 +79,7 @@ function _cvc() {
                 _message -e "Ambiguous command $cvc_command"
               else
                 _message -e "Subcommand $cvc_command not known"
+                _files
               fi
             fi
             curcontext="${curcontext%:*:*}:cvc-${cvc_command}:"
