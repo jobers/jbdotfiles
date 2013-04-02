@@ -5,6 +5,14 @@
 #(( $+functions[_cvc_commands] )) ||
 _cvc_commands () {
     local ret=1
+    local -a short_operations
+    short_operations=(
+        ci:'Commit changes to a source component'
+        co:'Check out a source component'
+        rm:'Remove a file from Conary control'
+        st:'Show changed files in the working directory'
+        status:'Show changed files in the working directory'
+        up:'Update files in one or more directories to a different version')
 
     local -a file_operations 
     file_operations=(
@@ -54,6 +62,7 @@ _cvc_commands () {
         context:'Set up a context in the current directory'
         newpkg:'Set a directory for creating a new package')
     
+    _describe -t short-operations 'shortcuts for other operations' short_operations         
     _describe -t file-operations 'used to manage files in the source directory' file_operations
     _describe -t info-display 'display cvc configuration and configuration files' information_display 
     _describe -t key-management 'used for client-server public key interaction' key_management 
@@ -74,28 +83,19 @@ _cvc_common_options () {
     
 #(( $+functions[_cvc-add] )) ||
 _cvc-add () {
-    zmodload zsh/pcre
     local curcontext="$curcontext" state line ret=1 filelist cvc_status
     typeset -A opt_args
     filelist=()
     if [[ -f "CONARY" ]]; then
-        cvc_status="$(cvc status)"
-        pcre_compile -m "\?\ \ (.*)$"
-        pcre_match -b -- "$cvc_status"
-        while [[ $? -eq 0 ]] do
-            b=($=ZPCRE_OP)
-            filelist+=${(q)match}
-            pcre_match -b -n ${b[2]} -- "${cvc_status}"
-        done
-    fi
-            
+        filelist=$(cvc status |grep '^\?\ ' | cut -b 4-)
+    fi               
     _arguments -S \
           '(--binary --text)'{--binary,--text}'[specify filetype]' \
           '*:FYI NO statefile found so listing all files:->file' && return
 
     case $state in
         (file)
-        if [[ -f "CONARY"  ]]; then
+        if [ -f "CONARY"  ]; then
             _describe -t files 'Files not under control' filelist && ret=0 
         else
             _files
