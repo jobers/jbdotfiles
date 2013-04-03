@@ -87,7 +87,7 @@ if [[ "$terminfo[colors]" -ge 8 ]]; then
 fi
 #if an xterm, just assume we're using 256 because gnome-terminal can SUCK A DICK.
 if [[ "${TERM}" == "xterm" ]]; then
-    setenv TERM xterm-256colors
+    setenv TERM xterm-256color
 fi
 
 if [[ "${TERM}" == "xterm" || "${TERM}" == "xterm-color"  || "${TERM}" == "screen"  || "${TERM}" == "screen-bce"  || "${TERM}" == "screen-256color-bce" || "$TERM" == "xterm-256color" ]]; then
