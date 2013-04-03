@@ -1,189 +1,106 @@
 #compdef cvc
+unset _cvc_commands _cvc_aliases _cvc_aliasmap
+typeset -ga _cvc_commands _cvc_aliases
+typeset -gA _cvc_aliasmap
 
-#helper functions
-
-#(( $+functions[_cvc_commands] )) ||
-_cvc_commands () {
-    local ret=1
-
-    local -a file_operations 
-    file_operations=(
-        add:'Add a file to be controlled by Conary'
-        merge:'Merge changes made in a parent branch into the current directory'
-        refresh:'Refresh files that are automatically downloaded'
-        remove:'Remove a file from Conary control'
-        rename:'Rename a file that is under Conary control'
-        revert:'Revert local changes to one or more files'
-        set:'Set the properties of a file under Conary control'
-        update:'Update files in one or more directories to a different version')
+_cvc_aliasmap=(
+    ci      commit
+    co      checkout
+    rm      remove
+    st      status
+    stat    status
+    up      update
+)
     
-    local -a information_display
-    information_display=(
-        annotate:'Show version information for each line in a file'
-        config:'Display the current configuration'
-        diff:'Show uncommitted changes'
-        explain:'Display Conary recipe documentation'
-        factory:'Show or change the factory for the working directory'
-        help:'Display help information'
-        log:'Show changelog entries for this source component'
-        rdiff:'Show changes between two versions of a trove in a repository'
-        status:'Show changed files in the working directory')
-    
-    local -a key_management
-    key_management=(
-        addkey:'Adds a public key from stdin to a repository'
-        getkey:'Retrieves a specified public key from a repository'
-        listkeys:'Lists the public key fingerprints for a specified user')
-    
-    local -a recipe_building
-    recipe_building=(
-        cook:'Build binary package and groups from a recipe')
-    
-    local -a repository_access
-    repository_access=(
-        checkout:'Check out a source component'
-        clone:'Copy troves from one branch to another in a repository'
-        commit:'Commit changes to a source component'
-        derive:'Create a derived package'
-        promote:'Copy troves from one label to another in a repository'
-        shadow:'Create a shadow in a repository'
-        sign:'Add a digital signature to troves in a repository')
-
-    local -a setup_commands
-    setup_commands=(
-        context:'Set up a context in the current directory'
-        newpkg:'Set a directory for creating a new package')
-    
-    _describe -t file-operations 'used to manage files in the source directory' file_operations
-    _describe -t info-display 'display cvc configuration and configuration files' information_display 
-    _describe -t key-management 'used for client-server public key interaction' key_management 
-    _describe -t recipe-building 'build recipes' recipe_building 
-    _describe -t repo-access 'interact with the conary repository' repository_access 
-    _describe -t setup-commands 'used in the creation of new contexts and packages' setup_commands && ret=0
-
-    return ret
-}
-
-#(( $+functions[_cvc_common_options] )) ||
-_cvc_common_options () {
-    local curcontext="$curcontext" state line ret=1
-    typeset -A opt_args
-    ret=0 
-    return ret       
-}
-    
-#(( $+functions[_cvc-add] )) ||
-_cvc-add () {
-    zmodload zsh/pcre
-    local curcontext="$curcontext" state line ret=1 filelist cvc_status
-    typeset -A opt_args
-    filelist=()
-    if [[ -f "CONARY" ]]; then
-        cvc_status="$(cvc status)"
-        pcre_compile -m "\?\ \ (.*)$"
-        pcre_match -b -- "$cvc_status"
-        while [[ $? -eq 0 ]] do
-            b=($=ZPCRE_OP)
-            filelist+=${(q)match}
-            pcre_match -b -n ${b[2]} -- "${cvc_status}"
-        done
-    fi
-            
-    _arguments -S \
-          '(--binary --text)'{--binary,--text}'[specify filetype]' \
-          '*:FYI NO statefile found so listing all files:->file' && return
-
-    case $state in
-        (file)
-        if [[ -f "CONARY"  ]]; then
-            _describe -t files 'Files not under control' filelist && ret=0 
-        else
-            _files
-        fi
-        ;;
-    esac
-    return ret
-}
-
-#(( $+functions[_cvc-help] )) ||
-_cvc-help () {
-    local curcontext="$curcontext" state line ret=1
-    typeset -A opt_args
-
-    _arguments \
-        '--verbose[show verbose help]' \
-        ': :->commands' && return
-    
-    case $state in
-        (commands)
-            _cvc_commands && ret=0    
-        ;;
-    esac
-
-    return ret
-}
-
-#(( $+functions[_cvc-merge] )) ||
-_cvc-merge () {
-    local curcontext="$curcontext" state line ret=1
-    typeset -A opt_args
-    
-    return ret       
-}
-
-#(( $+functions[_cvc-remove] )) ||
-_cvc-remove () {
-    zmodload zsh/pcre
-    local curcontext="$curcontext" state line ret=1 state_file filelist
-    typeset -A opt_arg
-    filelist=()
-    if [[ -f "CONARY" ]]; then
-        filelist=()
-        state_file="$(print ${${${${${${"$(<CONARY)"}#stateversion *$'\n'name *$'\n'version *$'\n'branch *$'\n'}#lastmerged *$'\n'}#factory *$'\n'}#[0-9]*$'\n'}} | perl -pe 's@\w{32}\ (.*)\ \w{40}\ (config|refresh|autosource)\ .*$@$1@' )"
-#        filelist=( "${(q)$(print "$state_file"| perl -pe 's@\w{32}\ (.*)\ \w{40}\ (config|refresh|autosource)\ .*$@$1@' | perl -pe 's@\ @\\ @g' )}" )
-    fi
-            
-    _arguments -S \
-          '*:FYI No statefile found so listing all files:->file' && return
-
-    case $state in
-        (file)
-        if [[ -f "CONARY" ]]; then
-            _describe -t files 'Files under CVC control' filelist && ret=0 
-        else
-            _files
-        fi
-        ;;
-    esac
-    return ret
-}
-
-_cvc() {
-    local curcontext=$curcontext state line ret=1
-    typeset -A opt_args
+function _cvc-add() {
+    [[ -n ${cvc_describe} ]] && print "Add a file to be controlled by Conary" && return
     _arguments -C \
-        {-c,--config=}'[pass configuration parameter to command]:->_conary_config' \
-        '(- :)--version[display version information]' \
-        '(- :)--help[display help message]' \
-        '(-): :->command' \
-        '*:: :->option-or-argument' && return
+        '(--binary --text)'{--binary,--text}'[specify filetype]' \
+        '*::specify non-tracked file:__cvc-files-notrack' 
+}
+
+function _cvc-help() {
+    [[ -n ${cvc_describe} ]] && print "Display help information" && return 
+    local -a helptopics
+    helptopics=( ${_cvc_commands} ${_cvc_aliases} )
+    _arguments '1:CVC Command:helptopics'
+}
+
+function __cvc-files-notrack() {
+    local -a files
+    files=( ${(q)${(f)"$(command cvc status 2>/dev/null |grep '^\?')"}/\?\ \ /} )
+    if (( ${#files} == 0 )); then
+        _describe -t files-notrack 'Files not currently tracked' files
+    else
+        _message -e "No CONARY state found. Falling back to files"
+        _files
+    fi    
+}
+
+function _cvc() {
+    local curcontext="${curcontext}"
+    local mode state ret
+    local -a args 
+    local -x cvc_command
+    unset cvc_describe
+
+    args=(
+        '--config[pass configuration parameter to command]:->_conary_config'
+        '(- :)--version[display version information]'
+        '(- :)--help[display help message]'
+        '(-): :->command'
+        '*:: :->option_or_argument'
+    )
+
+    _arguments -C -s -w ${args} && return
 
     case $state in
         (command)
-            _cvc_commands && ret=0
+            _describe -t subcommands "CVC Subcommands" _cvc_commands
+            _describe -t subcommands "CVC Alias" _cvc_aliases
         ;;
-        (option-or-argument)
-            curcontext=${curcontext%:*:*}:cvc-$words[1]:
-            if (( $+functions[_cvc-$words[1]] )) ; then
-                _call_function ret _cvc-$words[1]
-            elif zstyle -T :completion:$curcontext: use-fallback; then
-                _files && ret=0
-            else
-                _message 'unknown sub-command'
+        (option_or_argument)
+            if (( ${+commands[cvc]} == 0 )); then 
+                _message 'cvc not found in $path; sub-cmd completions disabled.'
+                _files
+                return 0
             fi
+            cvc_command="${words[1]}"
+            if [[ -n ${_cvc_aliasmap[$cvc_command]} ]] ; then
+                cvc_command="${_cvc_aliasmap[$cvc_command]}"
+            fi
+            if ! (( ${+functions[_cvc-$cvc_command]} )); then
+              local low high
+              low=$_cvc_commands[(i)$cvc_command*]
+              high=$_cvc_commands[(I)$cvc_command*]
+              if (( low == high )); then
+                cvc_command=${_cvc_commands[low]%%:*}
+              elif (( low < high )); then
+                _message -e "Ambiguous command $cvc_command"
+              else
+                _message -e "Subcommand $cvc_command not known"
+                _files
+              fi
+            fi
+            curcontext="${curcontext%:*:*}:cvc-${cvc_command}:"
+            _call_function ret _cvc-${cvc_command}
         ;;
     esac
-  return ret
 }
 
-_cvc "$@"
+local f desc 
+local -A rev
+local -x cvc_describe
+cvc_describe='please'
+
+for f ( ${(k)_cvc_aliasmap} ) {
+    rev+=( ${_cvc_aliasmap[$f]} $f )
+}
+
+for f ( ${(M)${(k)functions}:#_cvc-*} ) {
+    desc="$($f)"
+    _cvc_commands+=( "${f#_cvc-}${desc:+:$desc}" )
+    [[ -n ${rev[${f#_cvc-}]} ]] && _cvc_aliases+=( "${rev[${f#_cvc-}]}${desc:+:$desc}" )
+}
+unset desc f rev cvc_describe
+_cvc
