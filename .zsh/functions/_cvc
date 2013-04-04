@@ -68,11 +68,15 @@ function __cvc-describe() {
 
 function __cvc-files-notrack() {
     local -a files
-    files=( ${(q)${(f)"$(command cvc status 2>/dev/null |grep '^\?')"}/\?\ \ /} )
-    if (( ${#files} == 0 )); then
-        _describe -t files-notrack 'Files not currently tracked' files
+    if [ -f "CONARY" ]; then
+        files=( ${(q)${(f)"$(command cvc status 2>/dev/null |grep '^\?')"}/\?\ \ /} )
+        if (( ${#files} > 0 )); then
+            _describe -t files-notrack 'Files not currently tracked' files
+        else
+            _describe -t no-modified-files 'No untracked files, falling back' _files
+        fi
     else
-        _message -e "No CONARY state found. Falling back to files"
+        _message -e "No CONARY state found, falling back"
         _files
     fi    
 }
