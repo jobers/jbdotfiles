@@ -1,7 +1,7 @@
 #compdef cvc
-unset _cvc_commands _cvc_aliases _cvc_aliasmap
+unset _cvc_commands _cvc_aliases _cvc_aliasmap _cvc_descriptions
 typeset -ga _cvc_commands _cvc_aliases
-typeset -gA _cvc_aliasmap
+typeset -gA _cvc_aliasmap _cvc_descriptions
 
 _cvc_aliasmap=(
     ci      commit
@@ -12,18 +12,58 @@ _cvc_aliasmap=(
     up      update
 )
     
+_cvc_descriptions=(
+        add             "Add a file to be controlled by Conary"
+        addkey          "Adds a public key from stdin to a repository"
+        annotate        "Show version information for each line in a file"
+        checkout        "Check out a source component"
+        clone           "Copy troves from one branch to another in a repository"
+        commit          "Commit changes to a source component"
+        config          "Display the current configuration"
+        context         "Set up a context in the current directory"
+        cook            "Build binary package and groups from a recipe"
+        derive          "Create a derived package"
+        diff            "Show uncommitted changes"
+        explain         "Display Conary recipe documentation"
+        factory         "Show or change the factory for the working directory"
+        getkey          "Retrieves a specified public key from a repository"
+        help            "Display help information"
+        listkeys        "Lists the public key fingerprints for a specified user"
+        log             "Show changelog entries for this source component"
+        merge           "Merge changes made in a parent branch into the current directory"
+        newpkg          "Set a directory for creating a new package"
+        promote         "Copy troves from one label to another in a repository"
+        rdiff           "Show changes between two versions of a trove in a repository"
+        refresh         "Refresh files that are automatically downloaded"
+        remove          "Remove a file from Conary control"
+        rename          "Rename a file that is under Conary control"
+        revert          "Revert local changes to one or more files"
+        set             "Set the properties of a file under Conary control"
+        shadow          "Create a shadow in a repository"
+        sign            "Add a digital signature to troves in a repository"
+        status          "Show changed files in the working directory"
+        update          "Update files in one or more directories to a different version"
+)
 function _cvc-add() {
-    [[ -n ${cvc_describe} ]] && print "Add a file to be controlled by Conary" && return
+    [[ -n ${cvc_describe} ]] && __cvc-describe $0 && return
     _arguments -C \
         '(--binary --text)'{--binary,--text}'[specify filetype]' \
         '*::specify non-tracked file:__cvc-files-notrack' 
 }
 
 function _cvc-help() {
-    [[ -n ${cvc_describe} ]] && print "Display help information" && return 
+    [[ -n ${cvc_describe} ]] && __cvc-describe $0 && return
     local -a helptopics
     helptopics=( ${_cvc_commands} ${_cvc_aliases} )
     _arguments '1:CVC Command:helptopics'
+}
+
+function __cvc-describe() {
+    if [ -n ${_cvc_descriptions[${1#_cvc-}]} ]; then
+        print "${_cvc_descriptions[${1#_cvc-}]}"
+    else
+        print "description not found for ${1#_cvc-}"
+    fi
 }
 
 function __cvc-files-notrack() {
