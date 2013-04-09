@@ -53,11 +53,28 @@ function _cvc-add() {
 
 function _cvc-help() {
     [[ -n ${cvc_describe} ]] && __cvc-describe $0 && return
-    local -a helptopics
-    helptopics=( ${_cvc_commands} ${_cvc_aliases} )
-    _arguments '1:CVC Command:helptopics'
+    _arguments -C \
+        '--verbose[verbose output]' \
+        ':cvc subcommand:__cvc-list-subcommands'
 }
 
+function _cvc-merge() {
+    [[ -n ${cvc_describe} ]] && __cvc-describe $0 && return
+    local -a allvers
+    if [ -f "CONARY" ]; then
+        allvers=( $(conary rq --all-versions ${${${${(f)$(cat CONARY)}#* name }/ version \//=}%%/*}) )
+        if (( ${#allvers} > 0 )); then
+            compadd $allvers
+        else
+            message -e "no upstream versions found, completing package name instead"
+            compadd ${${${(f)$(cat CONARY)}#* name }%% version *}
+        fi
+    else
+        _message -e "No CONARY state found, falling back"
+        _files
+    fi
+}
+    
 function __cvc-describe() {
     if [ -n ${_cvc_descriptions[${1#_cvc-}]} ]; then
         print "${_cvc_descriptions[${1#_cvc-}]}"
@@ -81,6 +98,11 @@ function __cvc-files-notrack() {
     fi    
 }
 
+function __cvc-list-subcommands() {
+    _describe -t subcommands "cvc subcommands" _cvc_commands
+    _describe -t subcommands "cvc alias" _cvc_aliases
+}
+
 function _cvc() {
     local curcontext="${curcontext}"
     local mode state ret
@@ -100,8 +122,10 @@ function _cvc() {
 
     case $state in
         (command)
-            _describe -t subcommands "CVC Subcommands" _cvc_commands
-            _describe -t subcommands "CVC Alias" _cvc_aliases
+            compadd -X "cvc subcommands" ${(k)_cvc_descriptions}
+            compadd -X "cvc aliases" ${(k)_cvc_aliasmap}
+#            _describe -t subcommands "cvc subcommands" _cvc_commands
+#            _describe -t subcommands "cvc alias" _cvc_aliases
         ;;
         (option_or_argument)
             if (( ${+commands[cvc]} == 0 )); then 

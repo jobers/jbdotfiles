@@ -1,0 +1,12 @@
+
+function sskeyrm() {
+    local tks targ
+    targ=$1
+    tks=$( wc -l ~/.ssh/authorized_keys)
+    if (( $targ <= $tks )); then
+        sed -i -e "${targ}d"
+    else
+        print "invalid key line. only $tks lines total."
+        exit 2
+    fi
+}
