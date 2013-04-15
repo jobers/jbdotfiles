@@ -48,7 +48,7 @@ function _cvc-add() {
     [[ -n ${cvc_describe} ]] && __cvc-describe $0 && return
     _arguments -C \
         '(--binary --text)'{--binary,--text}'[specify filetype]' \
-        '*::specify non-tracked file:__cvc-files-notrack' 
+        '*::non-tracked files:__cvc-files-untracked' 
 }
 
 function _cvc-help() {
@@ -64,10 +64,10 @@ function _cvc-merge() {
     if [ -f "CONARY" ]; then
         allvers=( $(conary rq --all-versions ${${${${(f)$(cat CONARY)}#* name }/ version \//=}%%/*}) )
         if (( ${#allvers} > 0 )); then
-            compadd $allvers
+            compadd ${${${(f)$(cat CONARY)}#* name }%% version *} $allvers
         else
             message -e "no upstream versions found, completing package name instead"
-            compadd ${${${(f)$(cat CONARY)}#* name }%% version *}
+            compadd  ${${${(f)$(cat CONARY)}#* name }%% version *}
         fi
     else
         _message -e "No CONARY state found, falling back"
@@ -75,6 +75,30 @@ function _cvc-merge() {
     fi
 }
     
+function _cvc-refresh() {
+    [[ -n ${cvc_describe} ]] && __cvc-describe $0 && return
+    _arguments -C \
+        '*::autosourced files:__cvc-files-autosource'
+}
+
+function _cvc-remove() {
+    [[ -n ${cvc_describe} ]] && __cvc-describe $0 && return
+    _arguments -C \
+        '*::tracked files:__cvc-files-tracked'
+}
+
+function _cvc-rename() {
+    [[ -n ${cvc_describe} ]] && __cvc-describe $0 && return
+    _arguments -C \
+        ':tracked files:__cvc-files-tracked'
+}
+
+function _cvc-revert() {
+    [[ -n ${cvc_describe} ]] && __cvc-describe $0 && return
+    _arguments -C \
+        ':modified files:__cvc-files-modified'
+}
+
 function __cvc-describe() {
     if [ -n ${_cvc_descriptions[${1#_cvc-}]} ]; then
         print "${_cvc_descriptions[${1#_cvc-}]}"
@@ -83,17 +107,67 @@ function __cvc-describe() {
     fi
 }
 
-function __cvc-files-notrack() {
+function __cvc-files-autosource() {
+    local -a files
+    if [ -f "CONARY" ]; then
+        files=( ${(q)${(f)"$(command grep ' autosource ' ./CONARY | cut -b 34- | sed -e 's@.\{40\}\ autosource\ \/.*$@@' )"}/\?\ \ /} )
+        if (( ${#files} > 0 )); then
+            _describe -t files-autosourced "autosourced files" files
+        else
+            _describe -t no-modified-files 'no untracked files, falling back' _files
+        fi
+    else
+        _message -e "no CONARY state found, falling back"
+        _files
+    fi    
+}
+
+function __cvc-files-modified() {
+    local -a files
+    if [ -f "CONARY" ]; then
+        files=( ${(q)${(f)"$(command cvc status 2>/dev/null |grep '^M ')"}/M\ \ /} )
+        if (( ${#files} > 0 )); then
+            _describe -t files-notrack 'locally modified files' files
+        else
+            _message -e 'no modified files, falling back'
+            _files
+        fi
+    else
+        _message -e "no CONARY state found, falling back"
+        _files
+    fi    
+}
+
+function __cvc-files-tracked() {
+    local -a files 
+    local trovin
+    if [ -f "CONARY" ]; then
+        trovin=${${${${${(f)$(command cat CONARY )}#* name }/ version \//=}%% branch *}/\/*:/\/} 
+        files=( $(command conary rq --ls $trovin ) "$(command grep '@NEW@' CONARY | cut -b 34- | sed -e 's@.\{41\} [[:alpha:]]* \@NEW\@@@')" )
+        if (( ${#files} > 0 )); then
+            _describe -t files-tracked 'tracked files' files
+        else
+            _message -e "no tracked files found, falling back"
+            _files
+        fi
+    else
+        _message -e "no CONARY file found, falling back"
+        _files
+    fi
+}
+            
+function __cvc-files-untracked() {
     local -a files
     if [ -f "CONARY" ]; then
         files=( ${(q)${(f)"$(command cvc status 2>/dev/null |grep '^\?')"}/\?\ \ /} )
         if (( ${#files} > 0 )); then
-            _describe -t files-notrack 'Files not currently tracked' files
+            _describe -t files-notrack 'untracked files' files
         else
-            _describe -t no-modified-files 'No untracked files, falling back' _files
+            _message -e 'no untracked files, falling back'
+            _files
         fi
     else
-        _message -e "No CONARY state found, falling back"
+        _message -e "no CONARY state found, falling back"
         _files
     fi    
 }
@@ -122,8 +196,10 @@ function _cvc() {
 
     case $state in
         (command)
-            compadd -X "cvc subcommands" ${(k)_cvc_descriptions}
-            compadd -X "cvc aliases" ${(k)_cvc_aliasmap}
+            compadd ${(k)_cvc_descriptions}
+            compadd ${(k)_cvc_aliasmap}
+#           compadd -X "cvc subcommands" ${(k)_cvc_descriptions}
+#           compadd -X "cvc aliases" ${(k)_cvc_aliasmap}
 #            _describe -t subcommands "cvc subcommands" _cvc_commands
 #            _describe -t subcommands "cvc alias" _cvc_aliases
         ;;
