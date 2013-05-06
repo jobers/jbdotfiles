@@ -117,7 +117,7 @@
   if has("syntax")
      syn on
   endif
-"  set t_Co=256                " number of colors
+  set t_Co=256                " number of colors
 
 " some useful mappings:
   set pastetoggle=<f11>
