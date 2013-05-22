@@ -262,6 +262,7 @@ endif
   set laststatus=2
   set number
   nnoremap <F2> :set nonumber!<CR>
+  nnoremap <F3> :nohlsearch<CR>
   set paste
   set shiftwidth=4
   set smartindent
