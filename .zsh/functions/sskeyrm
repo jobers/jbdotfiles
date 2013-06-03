@@ -2,7 +2,7 @@
 function sskeyrm() {
     local tks targ
     targ=$1
-    tks=$( wc -l ~/.ssh/known_hosts )
+    tks=$( cat ~/.ssh/known_hosts | wc -l )
     if (( $targ <= $tks )); then
         sed -i -e "${targ}d" ~/.ssh/known_hosts
     else
