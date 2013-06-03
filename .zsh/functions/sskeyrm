@@ -2,9 +2,9 @@
 function sskeyrm() {
     local tks targ
     targ=$1
-    tks=$( wc -l ~/.ssh/authorized_keys)
+    tks=$( wc -l ~/.ssh/known_hosts )
     if (( $targ <= $tks )); then
-        sed -i -e "${targ}d"
+        sed -i -e "${targ}d" ~/.ssh/known_hosts
     else
         print "invalid key line. only $tks lines total."
         exit 2
