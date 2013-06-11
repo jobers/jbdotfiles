@@ -261,7 +261,7 @@ endif
   set indentkeys=!<Tab>,o,O
   set laststatus=2
   set number
-  nnoremap <F2> :set nonumber!<CR>
+  nnoremap <F2> :set nonumber! nonumber?<CR>
   nnoremap <F3> :nohlsearch<CR>
   set paste
   set shiftwidth=4
