@@ -236,7 +236,7 @@ endif
 " The undo files will be stored in $HOME/.cache/vim
 
   if version >= 703
-   enable persistent-undo
+   " enable persistent-undo
    set undofile
  
    " store the persistent undo file in ~/.cache/vim
