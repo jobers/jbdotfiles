@@ -68,6 +68,8 @@ if [[ -n $SSH_AUTH_SOCK ]]; then
     fi
 fi
 
+autoload -U zsh-reload
+
 export EDITOR=vim
 export MANWIDTH=${MANWIDTH:-80}
 ## Some quick Perl-hacks aka /useful/ oneliner
