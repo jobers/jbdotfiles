@@ -102,7 +102,7 @@ if [[ "${TERM}" == "screen" ]]; then
     setenv TERM screen-256color
 fi
 
-if [[ "${TERM}" == "xterm" || "${TERM}" == "xterm-color"  || "${TERM}" == "screen"  || "${TERM}" == "screen-bce"  || "${TERM}" == "screen-256color-bce" || "${TERM}" == "xterm-256color" ]]; then
+if [[ "${TERM}" == "xterm" || "${TERM}" == "xterm-color"  || "${TERM}" == "screen" || "${TERM}" == "screen-256color" || "${TERM}" == "screen-bce"  || "${TERM}" == "screen-256color-bce" || "${TERM}" == "xterm-256color" ]]; then
 for color in RED GREEN YELLOW BLUE MAGENTA CYAN WHITE; do
     eval PR_$color='%{$terminfo[bold]$fg[${(L)color}]%}'
     eval PR_LIGHT_$color='%{$fg[${(L)color}]%}'
