@@ -1,7 +1,9 @@
 
-_RPATHCMD_COMP_FILE="/etc/bash_completion.d/rpathcmd"
-if [[ -f "${_RPATHCMD_COMP_FILE}" ]] ; then
-    autoload bashcompinit
-    bashcompinit
-    source "${_RPATHCMD_COMP_FILE}"
-fi
+function _rpathcmd() {
+    _RPATHCMD_COMP_FILE="/etc/bash_completion.d/rpathcmd"
+    if [[ -f "${_RPATHCMD_COMP_FILE}" ]] ; then
+        autoload bashcompinit
+        bashcompinit
+        source "${_RPATHCMD_COMP_FILE}"
+    fi
+}
