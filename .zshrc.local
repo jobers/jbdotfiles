@@ -68,7 +68,6 @@ if [[ -n $SSH_AUTH_SOCK ]]; then
     fi
 fi
 
-autoload -U zsh-reload
 
 export EDITOR=vim
 export MANWIDTH=${MANWIDTH:-80}
@@ -90,7 +89,7 @@ export MANWIDTH=${MANWIDTH:-80}
 
 #Prompt foo
 # See if we can use colors.
-autoload colors zsh/terminfo
+autoload colors zsh/terminfo zsh-reload
 if [[ "$terminfo[colors]" -ge 8 ]]; then
     colors
 fi
