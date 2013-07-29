@@ -1,7 +1,7 @@
 #!/bin/sh
 
 SDIR=`dirname "$0"`
-TDIR="~"
+TDIR=~
 
 DOTDIRS="
 .ssh
