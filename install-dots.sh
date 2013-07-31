@@ -54,3 +54,4 @@ do
     cp -v "${SDIR}/${fil}" "${TDIR}/${fil}"
 done
 
+chmod 600 "${TDIR}/.ssh/config"
