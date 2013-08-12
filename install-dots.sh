@@ -6,6 +6,11 @@ TDIR=~
 DOTDIRS="
 .ssh
 .tmux
+.vim/syntax
+.vim/indent
+.vim/after
+.vim/ftplugin
+.vim/ftpdetect
 .zsh"
 
 DOTFILES="
