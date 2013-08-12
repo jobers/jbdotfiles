@@ -6,11 +6,11 @@ TDIR=~
 DOTDIRS="
 .ssh
 .tmux
-.vim/syntax
-.vim/indent
-.vim/after
+.vim/after/ftplugin
+.vim/ftdetect
 .vim/ftplugin
-.vim/ftpdetect
+.vim/indent
+.vim/syntax
 .zsh"
 
 DOTFILES="
@@ -53,7 +53,7 @@ do
         echo "${di} directory exists"
     else
         echo "${di} DOESN'T EXIST, creating..."
-        mkdir "${TDIR}/${di}" || echo "ERROR CREATING ${di}"
+        mkdir -p "${TDIR}/${di}" || echo "ERROR CREATING ${di}"
     fi
 done
 
