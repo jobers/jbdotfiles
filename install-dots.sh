@@ -18,6 +18,11 @@ DOTFILES="
 .tmux/defaults.sh
 .tmux/left.zsh
 .tmux/right.zsh
+.vim/syntax/puppet.vim
+.vim/indent/puppet.vim 
+.vim/after/ftplugin/puppet.vim 
+.vim/ftplugin/puppet.vim 
+.vim/ftdetect/puppet.vim
 .vimrc
 .zsh/dircolors.256dark
 .zsh/dircolors.256light
