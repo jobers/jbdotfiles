@@ -1,5 +1,6 @@
+#compdef rpathcmd 
 
-function _rpathcmd() {
+_rpathcmd() {
     _RPATHCMD_COMP_FILE="/etc/bash_completion.d/rpathcmd"
     if [[ -f "${_RPATHCMD_COMP_FILE}" ]] ; then
         autoload bashcompinit
