@@ -23,6 +23,11 @@ DOTFILES="
 .tmux/defaults.sh
 .tmux/left.zsh
 .tmux/right.zsh
+.vim/syntax/json.vim
+.vim/indent/json.vim 
+.vim/after/ftplugin/json.vim 
+.vim/ftplugin/json.vim 
+.vim/ftdetect/json.vim
 .vim/syntax/puppet.vim
 .vim/indent/puppet.vim 
 .vim/after/ftplugin/puppet.vim 
