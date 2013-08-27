@@ -4,6 +4,8 @@ SDIR=`dirname "$0"`
 TDIR=~
 
 DOTDIRS="
+.fonts/SourceCodePro
+.fonts/SourceSansPro
 .ssh
 .tmux
 .vim/after/ftplugin
@@ -14,6 +16,25 @@ DOTDIRS="
 .zsh"
 
 DOTFILES="
+.fonts/SourceCodePro/SourceCodePro-Black.otf
+.fonts/SourceCodePro/SourceCodePro-Bold.otf
+.fonts/SourceCodePro/SourceCodePro-ExtraLight.otf
+.fonts/SourceCodePro/SourceCodePro-Light.otf
+.fonts/SourceCodePro/SourceCodePro-Medium.otf
+.fonts/SourceCodePro/SourceCodePro-Regular.otf
+.fonts/SourceCodePro/SourceCodePro-Semibold.otf
+.fonts/SourceSansPro/SourceSansPro-BlackIt.otf
+.fonts/SourceSansPro/SourceSansPro-Black.otf
+.fonts/SourceSansPro/SourceSansPro-BoldIt.otf
+.fonts/SourceSansPro/SourceSansPro-Bold.otf
+.fonts/SourceSansPro/SourceSansPro-ExtraLightIt.otf
+.fonts/SourceSansPro/SourceSansPro-ExtraLight.otf
+.fonts/SourceSansPro/SourceSansPro-It.otf
+.fonts/SourceSansPro/SourceSansPro-LightIt.otf
+.fonts/SourceSansPro/SourceSansPro-Light.otf
+.fonts/SourceSansPro/SourceSansPro-Regular.otf
+.fonts/SourceSansPro/SourceSansPro-SemiboldIt.otf
+.fonts/SourceSansPro/SourceSansPro-Semibold.otf
 .gitconfig
 .screenrc
 .ssh/config
