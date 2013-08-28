@@ -13,7 +13,7 @@ DOTDIRS="
 .vim/ftplugin
 .vim/indent
 .vim/syntax
-.zsh"
+.zsh/functions"
 
 DOTFILES="
 .fonts/SourceCodePro/SourceCodePro-Black.otf
