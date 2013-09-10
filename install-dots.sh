@@ -4,6 +4,7 @@ SDIR=`dirname "$0"`
 TDIR=~
 
 DOTDIRS="
+bin
 .fonts/Ubuntu
 .fonts/SourceCodePro
 .fonts/SourceSansPro
@@ -17,6 +18,7 @@ DOTDIRS="
 .zsh/functions"
 
 DOTFILES="
+bin/prename
 .fonts/Ubuntu/CONTRIBUTING.txt
 .fonts/Ubuntu/copyright.txt
 .fonts/Ubuntu/FONTLOG.txt
