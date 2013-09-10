@@ -4,6 +4,7 @@ SDIR=`dirname "$0"`
 TDIR=~
 
 DOTDIRS="
+.fonts/Ubuntu
 .fonts/SourceCodePro
 .fonts/SourceSansPro
 .ssh
@@ -16,6 +17,26 @@ DOTDIRS="
 .zsh/functions"
 
 DOTFILES="
+.fonts/Ubuntu/CONTRIBUTING.txt
+.fonts/Ubuntu/copyright.txt
+.fonts/Ubuntu/FONTLOG.txt
+.fonts/Ubuntu/LICENCE-FAQ.txt
+.fonts/Ubuntu/LICENCE.txt
+.fonts/Ubuntu/README.txt
+.fonts/Ubuntu/TRADEMARKS.txt
+.fonts/Ubuntu/Ubuntu-BI.ttf
+.fonts/Ubuntu/Ubuntu-B.ttf
+.fonts/Ubuntu/Ubuntu-C.ttf
+.fonts/Ubuntu/Ubuntu-LI.ttf
+.fonts/Ubuntu/Ubuntu-L.ttf
+.fonts/Ubuntu/Ubuntu-MI.ttf
+.fonts/Ubuntu/UbuntuMono-BI.ttf
+.fonts/Ubuntu/UbuntuMono-B.ttf
+.fonts/Ubuntu/UbuntuMono-RI.ttf
+.fonts/Ubuntu/UbuntuMono-R.ttf
+.fonts/Ubuntu/Ubuntu-M.ttf
+.fonts/Ubuntu/Ubuntu-RI.ttf
+.fonts/Ubuntu/Ubuntu-R.ttf
 .fonts/SourceCodePro/SourceCodePro-Black.otf
 .fonts/SourceCodePro/SourceCodePro-Bold.otf
 .fonts/SourceCodePro/SourceCodePro-ExtraLight.otf
