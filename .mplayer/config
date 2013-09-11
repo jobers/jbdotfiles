@@ -1,0 +1,5 @@
+# Write your default config options here!
+cache=100000
+cache-seek-min=1
+cache-min=1
+
