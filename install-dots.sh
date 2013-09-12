@@ -8,6 +8,7 @@ bin
 .fonts/Ubuntu
 .fonts/SourceCodePro
 .fonts/SourceSansPro
+.mplayer
 .ssh
 .tmux
 .vim/after/ftplugin
@@ -59,6 +60,7 @@ bin/prename
 .fonts/SourceSansPro/SourceSansPro-SemiboldIt.otf
 .fonts/SourceSansPro/SourceSansPro-Semibold.otf
 .gitconfig
+.mplayer/config
 .screenrc
 .ssh/config
 .tmux.conf
