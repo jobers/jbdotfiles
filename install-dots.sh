@@ -92,6 +92,7 @@ bin/prename
 .zsh/functions/_rpathcmd
 .zsh/functions/__shell_properties
 .zsh/functions/sskeyrm
+.zsh/functions/_virsh
 .zsh/functions/zsh-reload
 .zshrc
 .zshrc.local
@@ -115,3 +116,4 @@ do
 done
 
 chmod 600 "${TDIR}/.ssh/config"
+chmod 700 "${TDIR}/.ssh"
