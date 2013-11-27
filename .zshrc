@@ -539,7 +539,6 @@ for fdir in /usr/share/grml/zsh/completion /usr/share/grml/functions; do
         done
     fi
 done
-[[ -d /usr/local/share/zsh-completions ]] && fpath=(/usr/local/share/zsh-completions $fpath)
 unset fdir func
 
 # support colors in less
